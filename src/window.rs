@@ -100,14 +100,14 @@ impl Window {
 
 	/// Create a new window with the specified position, flags and an optional parent window.
 	#[cfg_attr(feature = "windowless", deprecated = "Sciter.Lite doesn't have OS windows in windowless mode.")]
-	pub fn create(rect: RECT, flags: Flags, parent: Option<HWINDOW>) -> Window {
+	pub fn create(rect: RECT, flags: UINT, parent: Option<HWINDOW>) -> Window {
 		if cfg!(feature = "windowless")
 		{
 			panic!("Sciter.Lite doesn't have OS windows in windowless mode!");
 		}
 
 		let mut base = OsWindow::new();
-		let hwnd = base.create(rect, flags as UINT, parent.unwrap_or(0 as HWINDOW));
+		let hwnd = base.create(rect, flags, parent.unwrap_or(0 as HWINDOW));
 		assert!(!hwnd.is_null());
 
 		let wnd = Window { base: base, host: Rc::new(Host::attach(hwnd))};
@@ -409,11 +409,20 @@ pub struct Rectangle {
 ///   .glassy()
 ///   .create();
 /// ```
-#[derive(Default)]
 pub struct Builder {
-	flags: Flags,
+	flags: UINT,
 	rect: RECT,
 	parent: Option<HWINDOW>,
+}
+
+impl Default for Builder {
+    fn default() -> Self {
+        Self {
+            flags: SCITER_CREATE_WINDOW_FLAGS::SW_CHILD as UINT,
+            rect: RECT::default(),
+            parent: None,
+        }
+    }
 }
 
 // Note: https://rust-lang-nursery.github.io/api-guidelines/type-safety.html#non-consuming-builders-preferred
@@ -448,7 +457,7 @@ impl Builder {
 	/// Start with some flags.
 	pub fn with_flags(flags: Flags) -> Self {
 		Self {
-			flags,
+			flags: flags as UINT,
 			..Default::default()
 		}
 	}
@@ -539,13 +548,12 @@ impl Builder {
 	}
 
 	fn or(mut self, flag: Flags) -> Self {
-		self.flags = self.flags | flag;
+		self.flags = self.flags | (flag as UINT);
 		self
 	}
 
 	fn and(mut self, flag: Flags) -> Self {
-		let masked = self.flags as u32 & !(flag as u32);
-		self.flags = unsafe { ::std::mem::transmute(masked) };
+		self.flags &= !(flag as UINT);
 		self
 	}
 

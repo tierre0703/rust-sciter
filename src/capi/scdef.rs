@@ -154,10 +154,9 @@ impl Default for SCITER_CREATE_WINDOW_FLAGS {
 
 /// Flags can be OR'ed as `SW_MAIN|SW_ALPHA`.
 impl ::std::ops::BitOr for SCITER_CREATE_WINDOW_FLAGS {
-  type Output = SCITER_CREATE_WINDOW_FLAGS;
-  fn bitor(self, rhs: Self::Output) -> Self::Output {
-    let rn = (self as UINT) | (rhs as UINT);
-    unsafe { ::std::mem::transmute(rn) }
+  type Output = UINT;
+  fn bitor(self, rhs: Self) -> UINT {
+    (self as UINT) | (rhs as UINT)
   }
 }
 
