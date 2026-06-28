@@ -157,55 +157,57 @@ pub enum DRAW_EVENTS {
 }
 
 
+bitflags! {
 /// Event groups for subscription.
 #[repr(C)]
-#[derive(Copy, Clone)]
-#[derive(Debug, PartialOrd, PartialEq)]
-pub enum EVENT_GROUPS
-{ /// Attached/detached.
-	HANDLE_INITIALIZATION = 0x0000,
+#[derive(Copy, Clone, Debug, PartialOrd, PartialEq)]
+pub struct EVENT_GROUPS: UINT
+{
+	/// Attached/detached.
+	const HANDLE_INITIALIZATION = 0x0000;
 	/// Mouse events.
-	HANDLE_MOUSE = 0x0001,
+	const HANDLE_MOUSE = 0x0001;
 	/// Key events.
-	HANDLE_KEY = 0x0002,
+	const HANDLE_KEY = 0x0002;
 	/// Focus events, if this flag is set it also means that element it attached to is focusable.
-	HANDLE_FOCUS = 0x0004,
+	const HANDLE_FOCUS = 0x0004;
 	/// Scroll events.
-	HANDLE_SCROLL = 0x0008,
+	const HANDLE_SCROLL = 0x0008;
 	/// Timer event.
-	HANDLE_TIMER = 0x0010,
+	const HANDLE_TIMER = 0x0010;
 	/// Size changed event.
-	HANDLE_SIZE = 0x0020,
+	const HANDLE_SIZE = 0x0020;
 	/// Drawing request (event).
-	HANDLE_DRAW = 0x0040,
+	const HANDLE_DRAW = 0x0040;
 	/// Requested data has been delivered.
-	HANDLE_DATA_ARRIVED = 0x080,
+	const HANDLE_DATA_ARRIVED = 0x080;
 
 	/// Logical, synthetic events:
   /// `BUTTON_CLICK`, `HYPERLINK_CLICK`, etc.,
 	/// a.k.a. notifications from intrinsic behaviors.
-	HANDLE_BEHAVIOR_EVENT        = 0x0100,
+	const HANDLE_BEHAVIOR_EVENT        = 0x0100;
 	 /// Behavior specific methods.
-	HANDLE_METHOD_CALL           = 0x0200,
+	const HANDLE_METHOD_CALL           = 0x0200;
 	/// Behavior specific methods.
-	HANDLE_SCRIPTING_METHOD_CALL = 0x0400,
+	const HANDLE_SCRIPTING_METHOD_CALL = 0x0400;
 
 	/// Behavior specific methods using direct `tiscript::value`'s.
 	#[deprecated(since="Sciter 4.4.3.24", note="TIScript native API is gone, use SOM instead.")]
-	HANDLE_TISCRIPT_METHOD_CALL  = 0x0800,
+	const HANDLE_TISCRIPT_METHOD_CALL  = 0x0800;
 
 	/// System drag-n-drop.
-	HANDLE_EXCHANGE              = 0x1000,
+	const HANDLE_EXCHANGE              = 0x1000;
 	/// Touch input events.
-	HANDLE_GESTURE               = 0x2000,
+	const HANDLE_GESTURE               = 0x2000;
 	/// SOM passport and asset requests.
-	HANDLE_SOM                   = 0x8000,
+	const HANDLE_SOM                   = 0x8000;
 
 	/// All of them.
-	HANDLE_ALL                   = 0xFFFF,
+	const HANDLE_ALL                   = 0xFFFF;
 
 	/// Special value for getting subscription flags.
-	SUBSCRIPTIONS_REQUEST        = -1,
+	const SUBSCRIPTIONS_REQUEST        = 0xFFFF_FFFF;
+}
 }
 
 #[repr(C)]
@@ -539,11 +541,3 @@ pub enum BEHAVIOR_EVENTS
 
 }
 
-
-impl ::std::ops::BitOr for EVENT_GROUPS {
-  type Output = EVENT_GROUPS;
-  fn bitor(self, rhs: Self::Output) -> Self::Output {
-    let rn = (self as UINT) | (rhs as UINT);
-    unsafe { ::std::mem::transmute(rn) }
-  }
-}

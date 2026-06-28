@@ -76,6 +76,7 @@ folder for more complex usage and module-level sections for the guides about:
 
 #[cfg(target_os = "macos")]
 #[macro_use] extern crate objc;
+#[macro_use] extern crate bitflags;
 #[macro_use] extern crate lazy_static;
 
 
